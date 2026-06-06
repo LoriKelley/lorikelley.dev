@@ -1,0 +1,204 @@
+<html>
+  <body>
+<form id="developer-contact-form" action="https://web3forms.com" method="POST" novalidate>
+    <!-- Basic Core Configuration Tokens -->
+    <input type="hidden" name="access_key" value="38736f3d-a04b-4eaa-9667-4f4d2f977b83" />
+    <input type="hidden" name="redirect" value="https://lorikelley.dev" />
+    <input type="hidden" name="subject" value="New Client Contact Inquiry via lorikelley.dev" />
+
+    <div class="form-group">
+        <label for="client-name">Name<span>*</span></label>
+        <input type="text" id="client-name" name="Name" class="form-input" />
+        <span class="error-warning-label" id="err-client-name">This field is required</span>
+    </div>
+
+    <div class="form-group">
+        <label for="client-company">Company Name</label>
+        <input type="text" id="client-company" name="Company Name" class="form-input" />
+    </div>
+
+    <div class="form-group">
+        <label for="client-url">Website URL</label>
+        <input type="url" id="client-url" name="Website URL" class="form-input" placeholder="https://" />
+    </div>
+
+    <div class="form-group">
+        <label for="client-email">Email Address<span>*</span></label>
+        <input type="email" id="client-email" name="Email Address" class="form-input" />
+        <span class="error-warning-label" id="err-client-email">This field is required</span>
+    </div>
+
+    <div class="form-group">
+        <label for="client-phone">Phone Number</label>
+        <input type="tel" id="client-phone" name="Phone Number" class="form-input" />
+    </div>
+
+    <div class="form-group">
+        <label for="client-category">Project Category<span>*</span></label>
+        <select id="client-category" name="Project Category" class="form-select">
+            <option value="" disabled selected>Select a category...</option>
+            <option value="Full-Stack, long-term website project (more than 30 days)">Full-Stack, long-term website project (more than 30 days)</option>
+            <option value="Full-Stack, short term website project">Full-Stack, short term website project</option>
+            <option value="Help with a few design (frontend) bugs on my website">Help with a few design (frontend) bugs on my website</option>
+            <option value="Help with a few backend bugs on my website">Help with a few backend bugs on my website</option>
+            <option value="Help me figure out an error on my wordpress site">Help me figure out an error on my wordpress site</option>
+            <option value="Write a custom script, template, theme, or plugin for a CMS (Wordpress, Drupal, etc) to fit my website">Write a custom script, template, theme, or plugin for a CMS (Wordpress, Drupal, etc) to fit my website</option>
+        </select>
+        <span class="error-warning-label" id="err-client-category">This field is required</span>
+    </div>
+
+    <div class="form-group">
+        <label>Best time to contact you: Between...</label>
+        <div class="time-select-row">
+            <select id="time-start" name="Preferred Start Time" class="form-select">
+                <option value="" selected>Select start time...</option>
+                <option value="8 AM">8 AM</option>
+                <option value="9 AM">9 AM</option>
+                <option value="10 AM">10 AM</option>
+                <option value="11 AM">11 AM</option>
+                <option value="12 PM">12 PM</option>
+                <option value="1 PM">1 PM</option>
+                <option value="2 PM">2 PM</option>
+                <option value="3 PM">3 PM</option>
+                <option value="4 PM">4 PM</option>
+                <option value="5 PM">5 PM</option>
+                <option value="6 PM">6 PM</option>
+                <option value="7 PM">7 PM</option>
+                <option value="8 PM">8 PM</option>
+            </select>
+            <span class="time-split-word">and</span>
+            <select id="time-end" name="Preferred End Time" class="form-select">
+                <option value="" selected>Select end time...</option>
+                <option value="9 AM">9 AM</option>
+                <option value="10 AM">10 AM</option>
+                <option value="11 AM">11 AM</option>
+                <option value="12 PM">12 PM</option>
+                <option value="1 PM">1 PM</option>
+                <option value="2 PM">2 PM</option>
+                <option value="3 PM">3 PM</option>
+                <option value="4 PM">4 PM</option>
+                <option value="5 PM">5 PM</option>
+                <option value="6 PM">6 PM</option>
+                <option value="7 PM">7 PM</option>
+                <option value="8 PM">8 PM</option>
+                <option value="9 PM">9 PM</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="client-summary">Describe a small summary of your project and questions:<span>*</span></label>
+        <textarea id="client-summary" name="Project Summary Details" class="form-textarea" maxlength="1000"></textarea>
+        <span class="error-warning-label" id="err-client-summary">This field is required</span>
+        <span class="error-warning-label" id="err-client-summary-min">You haven't reached the minimum amount of characters- please describe your reason for contacting</span>
+    </div>
+
+    <button type="submit" class="submit-form-btn">Submit Request</button>
+</form>
+</body>
+
+<script>
+	const slides = document.querySelectorAll('.slide');
+	const nextBtnGroup = document.getElementById('next-arrow-group');
+	const navTextLabel = document.getElementById('nav-text-label');
+	let currentIndex = 0;
+
+	nextBtnGroup?.addEventListener('click', () => {
+		slides[currentIndex].classList.remove('active');
+		currentIndex = (currentIndex + 1) % slides.length;
+		slides[currentIndex].classList.add('active');
+
+		if (currentIndex === slides.length - 1) {
+			if (navTextLabel) navTextLabel.innerText = "Start Over";
+		} else {
+			if (navTextLabel) navTextLabel.innerText = "Read More";
+		}
+	});
+
+	const overlayElement = document.getElementById('contact-overlay');
+	const openTrigger = document.getElementById('open-overlay-trigger');
+	const closeTrigger = document.getElementById('close-overlay-trigger');
+
+	openTrigger?.addEventListener('click', () => {
+		overlayElement?.classList.add('open');
+	});
+
+	closeTrigger?.addEventListener('click', () => {
+		overlayElement?.classList.remove('open');
+	});
+
+	// Moving the listener inside to prevent global thread locking
+	document.getElementById('client-summary')?.addEventListener('input', (e) => {
+		const summaryTextArea = e.target;
+		const minErrorLabel = document.getElementById('err-client-summary-min');
+		const standardSummaryError = document.getElementById('err-client-summary');
+		const currentLength = summaryTextArea.value ? summaryTextArea.value.length : 0;
+
+		if (currentLength > 0 && currentLength < 30) {
+			if (minErrorLabel) minErrorLabel.style.display = 'block';
+			if (standardSummaryError) standardSummaryError.style.display = 'none';
+			summaryTextArea.classList.add('input-error-border');
+		} else {
+			if (minErrorLabel) minErrorLabel.style.display = 'none';
+			summaryTextArea.classList.remove('input-error-border');
+		}
+	});
+
+	// CLEAN NATIVE VALIDATION PASS
+	const contactForm = document.getElementById('developer-contact-form');
+	contactForm?.addEventListener('submit', (e) => {
+		const errors = document.querySelectorAll('.error-warning-label');
+		errors.forEach(err => (err).style.display = 'none');
+		const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
+		inputs.forEach(inp => inp.classList.remove('input-error-border'));
+
+		let formIsValid = true;
+
+		const nameInput = document.getElementById('client-name');
+		const emailInput = document.getElementById('client-email');
+		const categorySelect = document.getElementById('client-category');
+		const summaryTextArea = document.getElementById('client-summary');
+		const minErrorLabel = document.getElementById('err-client-summary-min');
+
+		if (!nameInput || !nameInput.value.trim()) {
+			const err = document.getElementById('err-client-name');
+			if (err) err.style.display = 'block';
+			nameInput?.classList.add('input-error-border');
+			formIsValid = false;
+		}
+		if (!emailInput || !emailInput.value.trim()) {
+			const err = document.getElementById('err-client-email');
+			if (err) err.style.display = 'block';
+			emailInput?.classList.add('input-error-border');
+			formIsValid = false;
+		}
+		if (!categorySelect || !categorySelect.value) {
+			const err = document.getElementById('err-client-category');
+			if (err) err.style.display = 'block';
+			categorySelect?.classList.add('input-error-border');
+			formIsValid = false;
+		}
+		if (!summaryTextArea || !summaryTextArea.value.trim()) {
+			const err = document.getElementById('err-client-summary');
+			if (err) err.style.display = 'block';
+			summaryTextArea?.classList.add('input-error-border');
+			formIsValid = false;
+		}
+
+		if (summaryTextArea && summaryTextArea.value.trim().length > 0 && summaryTextArea.value.trim().length < 30) {
+			if (minErrorLabel) minErrorLabel.style.display = 'block';
+			summaryTextArea.classList.add('input-error-border');
+			formIsValid = false;
+		}
+
+		// Stop submission if validation checks fail
+		if (!formIsValid) {
+			e.preventDefault();
+			return;
+		}
+
+		// Clear overlay window safely and let native browser submit the form attributes
+		if (overlayElement) overlayElement.classList.remove('open');
+	});
+</script>
+</html>
