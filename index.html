@@ -1,6 +1,6 @@
 <html>
   <body>
-<form id="developer-contact-form" action="https://web3forms.com" method="POST" novalidate>
+<form id="developer-contact-form" novalidate>
     <!-- Basic Core Configuration Tokens -->
     <input type="hidden" name="access_key" value="38736f3d-a04b-4eaa-9667-4f4d2f977b83" />
     <input type="hidden" name="redirect" value="https://lorikelley.dev" />
@@ -98,57 +98,12 @@
 </body>
 
 <script>
-	const slides = document.querySelectorAll('.slide');
-	const nextBtnGroup = document.getElementById('next-arrow-group');
-	const navTextLabel = document.getElementById('nav-text-label');
-	let currentIndex = 0;
-
-	nextBtnGroup?.addEventListener('click', () => {
-		slides[currentIndex].classList.remove('active');
-		currentIndex = (currentIndex + 1) % slides.length;
-		slides[currentIndex].classList.add('active');
-
-		if (currentIndex === slides.length - 1) {
-			if (navTextLabel) navTextLabel.innerText = "Start Over";
-		} else {
-			if (navTextLabel) navTextLabel.innerText = "Read More";
-		}
-	});
-
-	const overlayElement = document.getElementById('contact-overlay');
-	const openTrigger = document.getElementById('open-overlay-trigger');
-	const closeTrigger = document.getElementById('close-overlay-trigger');
-
-	openTrigger?.addEventListener('click', () => {
-		overlayElement?.classList.add('open');
-	});
-
-	closeTrigger?.addEventListener('click', () => {
-		overlayElement?.classList.remove('open');
-	});
-
-	// Moving the listener inside to prevent global thread locking
-	document.getElementById('client-summary')?.addEventListener('input', (e) => {
-		const summaryTextArea = e.target;
-		const minErrorLabel = document.getElementById('err-client-summary-min');
-		const standardSummaryError = document.getElementById('err-client-summary');
-		const currentLength = summaryTextArea.value ? summaryTextArea.value.length : 0;
-
-		if (currentLength > 0 && currentLength < 30) {
-			if (minErrorLabel) minErrorLabel.style.display = 'block';
-			if (standardSummaryError) standardSummaryError.style.display = 'none';
-			summaryTextArea.classList.add('input-error-border');
-		} else {
-			if (minErrorLabel) minErrorLabel.style.display = 'none';
-			summaryTextArea.classList.remove('input-error-border');
-		}
-	});
-
-	// CLEAN NATIVE VALIDATION PASS
-	const contactForm = document.getElementById('developer-contact-form');
+		const contactForm = document.getElementById('developer-contact-form');
 	contactForm?.addEventListener('submit', (e) => {
+		e.preventDefault(); // This explicitly blocks Cloudflare from throwing that 405 error!
+
 		const errors = document.querySelectorAll('.error-warning-label');
-		errors.forEach(err => (err).style.display = 'none');
+		errors.forEach(err => err.style.display = 'none');
 		const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
 		inputs.forEach(inp => inp.classList.remove('input-error-border'));
 
@@ -191,14 +146,62 @@
 			formIsValid = false;
 		}
 
-		// Stop submission if validation checks fail
-		if (!formIsValid) {
-			e.preventDefault();
-			return;
-		}
+		if (!formIsValid) return;
 
-		// Clear overlay window safely and let native browser submit the form attributes
-		if (overlayElement) overlayElement.classList.remove('open');
+		// Read form field text safely
+		const name = nameInput.value;
+		const company = document.getElementById('client-company').value || "Not Provided";
+		const url = document.getElementById('client-url').value || "Not Provided";
+		const email = emailInput.value;
+		const phone = document.getElementById('client-phone').value || "Not Provided";
+		const category = categorySelect.value;
+		
+		const timeStart = document.getElementById('time-start').value;
+		const timeEnd = document.getElementById('time-end').value;
+		const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
+		const projectSummary = summaryTextArea.value.trim();
+
+		// Compile values into a clean, formatted report string for your email body
+		const formattedMessage = 
+			`New Client Contact Form Submission:\n\n` +
+			`Name: ${name}\n` +
+			`Company: ${company}\n` +
+			`Website URL: ${url}\n` +
+			`Email: ${email}\n` +
+			`Phone: ${phone}\n` +
+			`Project Category: ${category}\n` +
+			`Best Time To Contact: ${bestTimeToContact}\n\n` +
+			`Project Summary & Questions:\n${projectSummary}`;
+
+		// Send data silently using standard JSON formatting to clear network locks
+		fetch("https://web3forms.com", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json"
+			},
+			body: JSON.stringify({
+				access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
+				subject: `Contact Inquiry from ${name} via lorikelley.dev`,
+				from_name: "noreply@lorikelley.dev",
+				message: formattedMessage
+			})
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				alert("Thank you! Your request has been sent successfully.");
+				if (overlayElement) overlayElement.classList.remove('open');
+				contactForm.reset();
+			} else {
+				alert("Web3Forms API Error: " + data.message);
+			}
+		})
+		.catch(error => {
+			console.error("Transmission Error:", error);
+			alert("Form transmission could not complete. Please check your internet connection.");
+		});
 	});
+
 </script>
 </html>
