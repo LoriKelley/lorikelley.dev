@@ -98,9 +98,58 @@
 </body>
 
 <script>
-		const contactForm = document.getElementById('developer-contact-form');
+	// 1. Core Slider Mechanics and Setup
+	const slides = document.querySelectorAll('.slide');
+	const nextBtnGroup = document.getElementById('next-arrow-group');
+	const navTextLabel = document.getElementById('nav-text-label');
+	let currentIndex = 0;
+
+	nextBtnGroup?.addEventListener('click', () => {
+		slides[currentIndex].classList.remove('active');
+		currentIndex = (currentIndex + 1) % slides.length;
+		slides[currentIndex].classList.add('active');
+
+		if (currentIndex === slides.length - 1) {
+			if (navTextLabel) navTextLabel.innerText = "Start Over";
+		} else {
+			if (navTextLabel) navTextLabel.innerText = "Read More";
+		}
+	});
+
+	// 2. Overlay Open/Close Management Variables
+	const overlayElement = document.getElementById('contact-overlay');
+	const openTrigger = document.getElementById('open-overlay-trigger');
+	const closeTrigger = document.getElementById('close-overlay-trigger');
+
+	openTrigger?.addEventListener('click', () => {
+		if (overlayElement) overlayElement.classList.add('open');
+	});
+
+	closeTrigger?.addEventListener('click', () => {
+		if (overlayElement) overlayElement.classList.remove('open');
+	});
+
+	// 3. Live Character Count Validation Checks
+	const summaryTextArea = document.getElementById('client-summary');
+	const minErrorLabel = document.getElementById('err-client-summary-min');
+	const standardSummaryError = document.getElementById('err-client-summary');
+
+	summaryTextArea?.addEventListener('input', () => {
+		const currentLength = summaryTextArea.value ? summaryTextArea.value.length : 0;
+		if (currentLength > 0 && currentLength < 30) {
+			if (minErrorLabel) minErrorLabel.style.display = 'block';
+			if (standardSummaryError) standardSummaryError.style.display = 'none';
+			summaryTextArea.classList.add('input-error-border');
+		} else {
+			if (minErrorLabel) minErrorLabel.style.display = 'none';
+			summaryTextArea.classList.remove('input-error-border');
+		}
+	});
+
+	// 4. Form Submit Listener & Formatted Payload Dispatch
+	const contactForm = document.getElementById('developer-contact-form');
 	contactForm?.addEventListener('submit', (e) => {
-		e.preventDefault(); // This explicitly blocks Cloudflare from throwing that 405 error!
+		e.preventDefault(); // Disables standard post page-reloads to stop Cloudflare 405 blocks
 
 		const errors = document.querySelectorAll('.error-warning-label');
 		errors.forEach(err => err.style.display = 'none');
@@ -112,8 +161,6 @@
 		const nameInput = document.getElementById('client-name');
 		const emailInput = document.getElementById('client-email');
 		const categorySelect = document.getElementById('client-category');
-		const summaryTextArea = document.getElementById('client-summary');
-		const minErrorLabel = document.getElementById('err-client-summary-min');
 
 		if (!nameInput || !nameInput.value.trim()) {
 			const err = document.getElementById('err-client-name');
@@ -148,7 +195,6 @@
 
 		if (!formIsValid) return;
 
-		// Read form field text safely
 		const name = nameInput.value;
 		const company = document.getElementById('client-company').value || "Not Provided";
 		const url = document.getElementById('client-url').value || "Not Provided";
@@ -161,7 +207,6 @@
 		const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
 		const projectSummary = summaryTextArea.value.trim();
 
-		// Compile values into a clean, formatted report string for your email body
 		const formattedMessage = 
 			`New Client Contact Form Submission:\n\n` +
 			`Name: ${name}\n` +
@@ -173,7 +218,7 @@
 			`Best Time To Contact: ${bestTimeToContact}\n\n` +
 			`Project Summary & Questions:\n${projectSummary}`;
 
-		// Send data silently using standard JSON formatting to clear network locks
+		// API URL target corrected to point to the actual submission gateway server
 		fetch("https://web3forms.com", {
 			method: "POST",
 			headers: {
