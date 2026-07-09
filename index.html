@@ -398,37 +398,43 @@
 				<button id="close-overlay-trigger" class="close-overlay-btn">Close</button>
 				<h2 class="form-title">Contact Information</h2>
 				
-				<form id="developer-contact-form" novalidate>
+				<form id="developer-contact-form" action="https://web3forms.com" method="POST" novalidate>
+					<!-- Web3Forms Server Native Routing Inputs -->
+					<input type="hidden" name="access_key" value="38736f3d-a04b-4eaa-9667-4f4d2f977b83" />
+					<input type="hidden" name="redirect" value="https://lorikelley.dev" />
+					<input type="hidden" name="subject" value="New Client Contact Inquiry via lorikelley.dev" />
+					<input type="hidden" name="from_name" value="noreply@lorikelley.dev" />
+
 					<div class="form-group">
 						<label for="client-name">Name<span>*</span></label>
-						<input type="text" id="client-name" class="form-input" />
+						<input type="text" id="client-name" name="Client Name" class="form-input" />
 						<span class="error-warning-label" id="err-client-name">This field is required</span>
 					</div>
 
 					<div class="form-group">
 						<label for="client-company">Company Name</label>
-						<input type="text" id="client-company" class="form-input" />
+						<input type="text" id="client-company" name="Company Name" class="form-input" />
 					</div>
 
 					<div class="form-group">
 						<label for="client-url">Website URL</label>
-						<input type="url" id="client-url" class="form-input" placeholder="https://" />
+						<input type="url" id="client-url" name="Website URL" class="form-input" placeholder="https://" />
 					</div>
 
 					<div class="form-group">
 						<label for="client-email">Email Address<span>*</span></label>
-						<input type="email" id="client-email" class="form-input" />
+						<input type="email" id="client-email" name="Email Address" class="form-input" />
 						<span class="error-warning-label" id="err-client-email">This field is required</span>
 					</div>
 
 					<div class="form-group">
 						<label for="client-phone">Phone Number</label>
-						<input type="tel" id="client-phone" class="form-input" />
+						<input type="tel" id="client-phone" name="Phone Number" class="form-input" />
 					</div>
 
 					<div class="form-group">
 						<label for="client-category">Project Category<span>*</span></label>
-						<select id="client-category" class="form-select">
+						<select id="client-category" name="Project Category" class="form-select">
 							<option value="" disabled selected>Select a category...</option>
 							<option value="Full-Stack, long-term website project (more than 30 days)">Full-Stack, long-term website project (more than 30 days)</option>
 							<option value="Full-Stack, short term website project">Full-Stack, short term website project</option>
@@ -443,7 +449,7 @@
 					<div class="form-group">
 						<label>Best time to contact you: Between...</label>
 						<div class="time-select-row">
-							<select id="time-start" class="form-select">
+							<select id="time-start" name="Preferred Start Time" class="form-select">
 								<option value="" selected>Select start time...</option>
 								<option value="8 AM">8 AM</option>
 								<option value="9 AM">9 AM</option>
@@ -460,7 +466,7 @@
 								<option value="8 PM">8 PM</option>
 							</select>
 							<span class="time-split-word">and</span>
-							<select id="time-end" class="form-select">
+							<select id="time-end" name="Preferred End Time" class="form-select">
 								<option value="" selected>Select end time...</option>
 								<option value="9 AM">9 AM</option>
 								<option value="10 AM">10 AM</option>
@@ -481,7 +487,7 @@
 
 					<div class="form-group">
 						<label for="client-summary">Describe a small summary of your project and questions:<span>*</span></label>
-						<textarea id="client-summary" class="form-textarea" maxlength="1000"></textarea>
+						<textarea id="client-summary" name="Project Details & Summary" class="form-textarea" maxlength="1000"></textarea>
 						<span class="error-warning-label" id="err-client-summary">This field is required</span>
 						<span class="error-warning-label" id="err-client-summary-min">You haven't reached the minimum amount of characters- please describe your reason for contacting</span>
 					</div>
@@ -540,7 +546,7 @@
 
 				const contactForm = document.getElementById('developer-contact-form');
 				contactForm?.addEventListener('submit', (e) => {
-					e.preventDefault(); 
+					// We do NOT use e.preventDefault() here globally, or it will freeze the native submit pipeline!
 
 					const errors = document.querySelectorAll('.error-warning-label');
 					errors.forEach(err => err.style.display = 'none');
@@ -584,59 +590,16 @@
 						formIsValid = false;
 					}
 
-					if (!formIsValid) return;
+					// Intercept and cancel form submission ONLY if text fields are missing or invalid
+					if (!formIsValid) {
+						e.preventDefault();
+						return;
+					}
 
-					const name = nameInput.value;
-					const company = document.getElementById('client-company').value || "Not Provided";
-					const url = document.getElementById('client-url').value || "Not Provided";
-					const email = emailInput.value;
-					const phone = document.getElementById('client-phone').value || "Not Provided";
-					const category = categorySelect.value;
-					
-					const timeStart = document.getElementById('time-start').value;
-					const timeEnd = document.getElementById('time-end').value;
-					const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
-					const projectSummary = summaryTextArea.value.trim();
-
-					const formattedMessage = 
-						`New Client Contact Form Submission:\n\n` +
-						`Name: ${name}\n` +
-						`Company: ${company}\n` +
-						`Website URL: ${url}\n` +
-						`Email: ${email}\n` +
-						`Phone: ${phone}\n` +
-						`Project Category: ${category}\n` +
-						`Best Time To Contact: ${bestTimeToContact}\n\n` +
-						`Project Summary & Questions:\n${projectSummary}`;
-
-					fetch("https://web3forms.com", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-							"Accept": "application/json"
-						},
-						body: JSON.stringify({
-							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
-							subject: `Contact Inquiry from ${name} via lorikelley.dev`,
-							from_name: "noreply@lorikelley.dev",
-							message: formattedMessage
-						})
-					})
-					.then(response => response.json())
-					.then(data => {
-						if (data.success) {
-							alert("Thank you! Your request has been sent successfully.");
-							if (overlayElement) overlayElement.classList.remove('open');
-							contactForm.reset();
-						} else {
-							alert("Web3Forms API Error: " + data.message);
-						}
-					})
-					.catch(error => {
-						console.error("Transmission Error:", error);
-						alert("Form transmission could not complete. Please check your internet connection.");
-					});
+					// Validation passed! Dismiss the overlay view and let the native HTML form submit proceed to Web3Forms
+					if (overlayElement) overlayElement.classList.remove('open');
 				});
+
 				
 			});
 		</script>
