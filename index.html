@@ -616,7 +616,8 @@
 
 					// Secure background transmission to Web3Forms API gateway with strict CORS validation parameters
 										// Cleaned JSON object with the conflicting 'from_name' parameter completely removed
-					fetch("https://api.web3forms.com/submit", {
+										// Secure background transmission to Web3Forms API gateway
+					fetch("https://web3forms.com", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -624,8 +625,12 @@
 						},
 						body: JSON.stringify({
 							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
-							subject: `New Client Inquiry from ${name}`,
-							replyto: email, // Maps the reply route safely without spam triggers
+							// Fix 1: Changes the subject line to be a clean, non-spam header
+							subject: `Website Contact Form Message from ${name}`,
+							// Fix 2: Passes the user's name as a pure text label string
+							from_name: name,
+							// Fix 3: Tells Web3Forms where to route replies safely without failing security alignments
+							replyto: email, 
 							message: formattedMessage
 						})
 					})
