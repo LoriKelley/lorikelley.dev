@@ -616,9 +616,9 @@
 						`Project Summary & Questions:\n${projectSummary}`;
 
 					// Secure background transmission to Web3Forms API gateway with strict CORS validation parameters
+										// Cleaned JSON object with the conflicting 'from_name' parameter completely removed
 					fetch("https://web3forms.com", {
 						method: "POST",
-						mode: "cors", // Explicitly unlocks cross-domain network transactions
 						headers: {
 							"Content-Type": "application/json",
 							"Accept": "application/json"
@@ -626,7 +626,6 @@
 						body: JSON.stringify({
 							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
 							subject: `Contact Inquiry from ${name} via lorikelley.dev`,
-							from_name: "noreply@lorikelley.dev",
 							message: formattedMessage
 						})
 					})
