@@ -544,9 +544,9 @@
 					}
 				});
 
-				const contactForm = document.getElementById('developer-contact-form');
-				contactForm?.addEventListener('submit', (e) => {
-					// We do NOT use e.preventDefault() here globally, or it will freeze the native submit pipeline!
+					const contactForm = document.getElementById('developer-contact-form');
+				    contactForm?.addEventListener('submit', (e) => {
+					e.preventDefault(); // Explicitly stops page reloads and halts any native form blocks
 
 					const errors = document.querySelectorAll('.error-warning-label');
 					errors.forEach(err => err.style.display = 'none');
@@ -590,16 +590,61 @@
 						formIsValid = false;
 					}
 
-					// Intercept and cancel form submission ONLY if text fields are missing or invalid
-					if (!formIsValid) {
-						e.preventDefault();
-						return;
-					}
+					if (!formIsValid) return;
 
-					// Validation passed! Dismiss the overlay view and let the native HTML form submit proceed to Web3Forms
-					if (overlayElement) overlayElement.classList.remove('open');
+					const name = nameInput.value;
+					const company = document.getElementById('client-company').value || "Not Provided";
+					const url = document.getElementById('client-url').value || "Not Provided";
+					const email = emailInput.value;
+					const phone = document.getElementById('client-phone').value || "Not Provided";
+					const category = categorySelect.value;
+					
+					const timeStart = document.getElementById('time-start').value;
+					const timeEnd = document.getElementById('time-end').value;
+					const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
+					const projectSummary = summaryTextArea.value.trim();
+
+					const formattedMessage = 
+						`New Client Contact Form Submission:\n\n` +
+						`Name: ${name}\n` +
+						`Company: ${company}\n` +
+						`Website URL: ${url}\n` +
+						`Email: ${email}\n` +
+						`Phone: ${phone}\n` +
+						`Project Category: ${category}\n` +
+						`Best Time To Contact: ${bestTimeToContact}\n\n` +
+						`Project Summary & Questions:\n${projectSummary}`;
+
+					// Secure background transmission to Web3Forms API gateway with strict CORS validation parameters
+					fetch("https://web3forms.com", {
+						method: "POST",
+						mode: "cors", // Explicitly unlocks cross-domain network transactions
+						headers: {
+							"Content-Type": "application/json",
+							"Accept": "application/json"
+						},
+						body: JSON.stringify({
+							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
+							subject: `Contact Inquiry from ${name} via lorikelley.dev`,
+							from_name: "noreply@lorikelley.dev",
+							message: formattedMessage
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							alert("Thank you! Your request has been sent successfully.");
+							if (overlayElement) overlayElement.classList.remove('open');
+							contactForm.reset();
+						} else {
+							alert("Web3Forms API Error: " + data.message);
+						}
+					})
+					.catch(error => {
+						console.error("Transmission Error:", error);
+						alert("Form transmission could not complete. Please check your internet connection.");
+					});
 				});
-
 				
 			});
 		</script>
