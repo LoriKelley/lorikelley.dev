@@ -1,151 +1,644 @@
-<script>
-	// 1. Core Slider Mechanics and Setup
-	const slides = document.querySelectorAll('.slide');
-	const nextBtnGroup = document.getElementById('next-arrow-group');
-	const navTextLabel = document.getElementById('nav-text-label');
-	let currentIndex = 0;
-
-	nextBtnGroup?.addEventListener('click', () => {
-		slides[currentIndex].classList.remove('active');
-		currentIndex = (currentIndex + 1) % slides.length;
-		slides[currentIndex].classList.add('active');
-
-		if (currentIndex === slides.length - 1) {
-			if (navTextLabel) navTextLabel.innerText = "Start Over";
-		} else {
-			if (navTextLabel) navTextLabel.innerText = "Read More";
-		}
-	});
-
-	// 2. Overlay Open/Close Management Variables
-	const overlayElement = document.getElementById('contact-overlay');
-	const openTrigger = document.getElementById('open-overlay-trigger');
-	const closeTrigger = document.getElementById('close-overlay-trigger');
-
-	openTrigger?.addEventListener('click', () => {
-		if (overlayElement) overlayElement.classList.add('open');
-	});
-
-	closeTrigger?.addEventListener('click', () => {
-		if (overlayElement) overlayElement.classList.remove('open');
-	});
-
-	// 3. Live Character Count Validation Checks
-	const summaryTextArea = document.getElementById('client-summary');
-	const minErrorLabel = document.getElementById('err-client-summary-min');
-	const standardSummaryError = document.getElementById('err-client-summary');
-
-	summaryTextArea?.addEventListener('input', () => {
-		const currentLength = summaryTextArea.value ? summaryTextArea.value.length : 0;
-		if (currentLength > 0 && currentLength < 30) {
-			if (minErrorLabel) minErrorLabel.style.display = 'block';
-			if (standardSummaryError) standardSummaryError.style.display = 'none';
-			summaryTextArea.classList.add('input-error-border');
-		} else {
-			if (minErrorLabel) minErrorLabel.style.display = 'none';
-			summaryTextArea.classList.remove('input-error-border');
-		}
-	});
-
-	// 4. Form Submit Listener & Formatted Payload Dispatch
-	const contactForm = document.getElementById('developer-contact-form');
-	contactForm?.addEventListener('submit', (e) => {
-		e.preventDefault(); // Disables standard post page-reloads to stop Cloudflare 405 blocks
-
-		const errors = document.querySelectorAll('.error-warning-label');
-		errors.forEach(err => err.style.display = 'none');
-		const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
-		inputs.forEach(inp => inp.classList.remove('input-error-border'));
-
-		let formIsValid = true;
-
-		const nameInput = document.getElementById('client-name');
-		const emailInput = document.getElementById('client-email');
-		const categorySelect = document.getElementById('client-category');
-
-		if (!nameInput || !nameInput.value.trim()) {
-			const err = document.getElementById('err-client-name');
-			if (err) err.style.display = 'block';
-			nameInput?.classList.add('input-error-border');
-			formIsValid = false;
-		}
-		if (!emailInput || !emailInput.value.trim()) {
-			const err = document.getElementById('err-client-email');
-			if (err) err.style.display = 'block';
-			emailInput?.classList.add('input-error-border');
-			formIsValid = false;
-		}
-		if (!categorySelect || !categorySelect.value) {
-			const err = document.getElementById('err-client-category');
-			if (err) err.style.display = 'block';
-			categorySelect?.classList.add('input-error-border');
-			formIsValid = false;
-		}
-		if (!summaryTextArea || !summaryTextArea.value.trim()) {
-			const err = document.getElementById('err-client-summary');
-			if (err) err.style.display = 'block';
-			summaryTextArea?.classList.add('input-error-border');
-			formIsValid = false;
-		}
-
-		if (summaryTextArea && summaryTextArea.value.trim().length > 0 && summaryTextArea.value.trim().length < 30) {
-			if (minErrorLabel) minErrorLabel.style.display = 'block';
-			summaryTextArea.classList.add('input-error-border');
-			formIsValid = false;
-		}
-
-		if (!formIsValid) return;
-
-		const name = nameInput.value;
-		const company = document.getElementById('client-company').value || "Not Provided";
-		const url = document.getElementById('client-url').value || "Not Provided";
-		const email = emailInput.value;
-		const phone = document.getElementById('client-phone').value || "Not Provided";
-		const category = categorySelect.value;
-		
-		const timeStart = document.getElementById('time-start').value;
-		const timeEnd = document.getElementById('time-end').value;
-		const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
-		const projectSummary = summaryTextArea.value.trim();
-
-		const formattedMessage = 
-			`New Client Contact Form Submission:\n\n` +
-			`Name: ${name}\n` +
-			`Company: ${company}\n` +
-			`Website URL: ${url}\n` +
-			`Email: ${email}\n` +
-			`Phone: ${phone}\n` +
-			`Project Category: ${category}\n` +
-			`Best Time To Contact: ${bestTimeToContact}\n\n` +
-			`Project Summary & Questions:\n${projectSummary}`;
-
-		// API URL target corrected to point to the actual submission gateway server
-		fetch("https://web3forms.com", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json"
-			},
-			body: JSON.stringify({
-				access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
-				subject: `Contact Inquiry from ${name} via lorikelley.dev`,
-				from_name: "noreply@lorikelley.dev",
-				message: formattedMessage
-			})
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.success) {
-				alert("Thank you! Your request has been sent successfully.");
-				if (overlayElement) overlayElement.classList.remove('open');
-				contactForm.reset();
-			} else {
-				alert("Web3Forms API Error: " + data.message);
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Career Profile & Specializations</title>
+		<style>
+			html, body {
+				margin: 0 !important;
+				padding: 0 !important;
+				width: 100% !important;
+				height: 100% !important;
+				overflow: hidden !important;
+				background-color: #030303 !important;
 			}
-		})
-		.catch(error => {
-			console.error("Transmission Error:", error);
-			alert("Form transmission could not complete. Please check your internet connection.");
-		});
-	});
-</script>
+
+			.slider-container {
+				position: relative;
+				width: 100vw;
+				height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-family: system-ui, sans-serif;
+				color: #f3f4f6;
+				background-color: #030303 !important;
+				background-image: linear-gradient(
+					135deg, 
+					rgba(135, 206, 235, 0.90) 0%,   /* Neon Sky Blue Comet Head */
+					rgba(186, 147, 219, 0.85) 20%,  /* Light Purple Middle */
+					rgba(255, 182, 193, 0.80) 45%,  /* Light Pink Tail */
+					rgba(3, 3, 3, 1.00) 70%         /* Fades out completely to deep space black */
+				) !important;
+				background-attachment: fixed;
+			}
+
+			.slides-inner {
+				width: 100%;
+				height: 100%;
+				position: relative;
+			}
+
+			.slide {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.5s ease-in-out;
+				padding: 0 12% 0 10%;
+				box-sizing: border-box;
+			}
+
+			.slide.active {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			.slide-content {
+				max-width: 800px;
+				text-align: left;
+			}
+
+			.description-text {
+				font-size: 2.5rem;
+				line-height: 1.4;
+				font-weight: 600;
+				letter-spacing: -0.02em;
+				margin-bottom: 2rem;
+				color: #ffffff;
+				text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
+			}
+
+			@media (max-width: 768px) {
+				.slide {
+					padding: 0 8% 120px 8%; 
+				}
+				.description-text {
+					font-size: 1.5rem;
+					line-height: 1.5;
+				}
+			}
+
+			.inline-trigger-link {
+				color: #ffffff;
+				text-decoration: underline;
+				text-underline-offset: 4px;
+				text-decoration-color: #ffffff;
+				cursor: pointer;
+				transition: color 0.2s ease, text-decoration-color 0.2s ease;
+			}
+
+			.inline-trigger-link:hover {
+				color: #87ceeb;
+				text-decoration-color: #87ceeb;
+			}
+
+			.nav-group-container {
+				position: absolute;
+				right: 2rem;
+				top: 50%;
+				transform: translateY(-50%);
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				z-index: 10;
+				cursor: pointer;
+			}
+
+			.read-more-text {
+				font-size: 1.25rem;
+				font-weight: 700;
+				letter-spacing: 0.05em;
+				text-transform: uppercase;
+				user-select: none;
+				text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+				animation: cosmicPulse 1s infinite ease-in-out;
+				display: inline-block;
+			}
+
+			.nav-arrow {
+				background: rgba(0, 0, 0, 0.7); 
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				cursor: pointer;
+				width: 3.5rem;
+				height: 3.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
+				box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.9);
+				transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+				animation: cosmicPulse 1s infinite ease-in-out;
+			}
+
+			@keyframes cosmicPulse {
+				0%, 100% { color: #ffffff; fill: transparent; }
+				45% { color: #ffffff; fill: transparent; }
+				50%, 95% {
+					color: #87ceeb;
+					filter: drop-shadow(0 0 8px rgba(135, 206, 235, 0.8));
+				}
+			}
+
+			.nav-group-container:hover .nav-arrow {
+				background-color: #0a0a0a;
+				border-color: #ffffff;
+				transform: scale(1.15);
+				box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.95), 0 0 25px 5px rgba(255, 255, 255, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4);
+				animation-play-state: paused; 
+				color: #ffffff !important;
+			}
+
+			.nav-group-container:hover .read-more-text {
+				color: #ffffff !important;
+				text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+				animation-play-state: paused;
+			}
+
+			.nav-arrow svg {
+				width: 2rem;
+				height: 2rem;
+			}
+
+			@media (max-width: 768px) {
+				.nav-group-container {
+					right: auto;
+					left: 50%;
+					top: auto;
+					bottom: 2.5rem;
+					transform: translateX(-50%);
+					gap: 0;
+				}
+				.read-more-text {
+					display: none !important;
+				}
+				.nav-arrow {
+					width: 4rem;
+					height: 4rem;
+					background: rgba(0, 0, 0, 0.85);
+				}
+			}
+
+			.form-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background-color: rgba(0, 0, 0, 0.6); 
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.3s ease-in-out;
+				z-index: 100;
+				padding: 20px;
+				box-sizing: border-box;
+			}
+
+			.form-overlay.open {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			.form-card {
+				background-color: #111827;
+				width: 100%;
+				max-width: 650px;
+				max-height: 90vh;
+				overflow-y: auto;
+				border-radius: 12px;
+				padding: 2.5rem;
+				position: relative;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45), 0 25px 50px -12px rgba(0, 0, 0, 0.95);
+			}
+
+			@media (max-width: 480px) {
+				.form-card {
+					padding: 1.5rem 1rem;
+				}
+			}
+
+			.close-overlay-btn {
+				position: absolute;
+				top: 1.25rem;
+				right: 1.25rem;
+				background: transparent;
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				color: #9ca3af;
+				padding: 0.4rem 1rem;
+				border-radius: 4px;
+				font-weight: 700;
+				font-size: 0.85rem;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+
+			.close-overlay-btn:hover {
+				color: #ffffff;
+				border-color: #ffffff;
+				background-color: rgba(255, 255, 255, 0.05);
+			}
+
+			.form-title {
+				font-size: 1.75rem;
+				font-weight: 700;
+				margin-bottom: 1.5rem;
+				color: #ffffff;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+				padding-bottom: 0.5rem;
+			}
+
+			.form-group {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+				margin-bottom: 1.25rem;
+				position: relative;
+			}
+
+			.form-group label {
+				font-size: 0.9rem;
+				font-weight: 600;
+				color: #d1d5db;
+			}
+
+			.form-group label span {
+				color: #ef4444;
+				margin-left: 0.25rem;
+			}
+
+			.time-select-row {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				width: 100%;
+			}
+
+			.time-select-row select {
+				flex: 1;
+			}
+
+			.time-split-word {
+				color: #9ca3af;
+				font-weight: 600;
+				font-size: 0.95rem;
+				text-transform: lowercase;
+			}
+
+			.form-input, .form-select, .form-textarea {
+				background-color: #1f2937;
+				border: 1px solid #374151;
+				border-radius: 6px;
+				padding: 0.75rem;
+				color: #ffffff;
+				font-family: inherit;
+				font-size: 1rem;
+				outline: none;
+				transition: border-color 0.2s ease;
+				box-sizing: border-box;
+				width: 100%;
+			}
+
+			.form-textarea {
+				height: 120px;
+				resize: vertical;
+			}
+
+			.form-input:focus, .form-select:focus, .form-textarea:focus {
+				border-color: #87ceeb;
+			}
+
+			.error-warning-label {
+				color: #ef4444 !important;
+				font-weight: 700 !important;
+				font-size: 0.8rem !important;
+				margin-top: 0.25rem;
+				display: none; 
+			}
+
+			.input-error-border {
+				border-color: #ef4444 !important;
+			}
+
+			.submit-form-btn {
+				background-color: #87ceeb;
+				color: #030303;
+				border: none;
+				padding: 0.85rem;
+				border-radius: 6px;
+				font-size: 1.1rem;
+				font-weight: 700;
+				width: 100%;
+				cursor: pointer;
+				transition: background-color 0.2s ease;
+				margin-top: 0.5rem;
+			}
+
+			.submit-form-btn:hover {
+				background-color: #60a5fa;
+			}
+		</style>
+	</head>
+	<body>
+
+		<main class="slider-container">
+			<div class="slides-inner">
+				<!-- Slide 1 -->
+				<section class="slide active">
+					<div class="slide-content">
+						<p class="description-text">I am a Full-Stack web developer for both frontend and backend web development applications, for both websites and mobile apps. I can manage the entire project, whether we do a custom build or use 3rd-party website management software.</p>
+					</div>
+				</section>
+
+				<!-- Slide 2 -->
+				<section class="slide">
+					<div class="slide-content">
+						<p class="description-text">I can turn any existing design into pure frontend code for a website, webpage, or mobile app using vanilla coding languages, or if preferred, popular webpage builders, including wordpress .</p>
+					</div>
+				</section>
+
+				<!-- Slide 3 -->
+				<section class="slide">
+					<div class="slide-content">
+						<p class="description-text">I can debug and fix any javascript, php, css, or html code for issues, including plugins, themes, or any other online tools used today that work with those languages.</p>
+					</div>
+				</section>
+
+				<!-- Slide 4 -->
+				<section class="slide">
+					<div class="slide-content">
+						<p class="description-text">Interested in chatting to see if I would be a great fit for your business's online presence? We can set up a zoom or phone call or just email to answer any questions you may have. Submit your contact information and reason for contacting <span id="open-overlay-trigger" class="inline-trigger-link">here</span>.</p>
+					</div>
+				</section>
+			</div>
+
+			<div id="next-arrow-group" class="nav-group-container">
+				<span id="nav-text-label" class="read-more-text">Read More</span>
+				<button class="nav-arrow" aria-label="Next Slide">
+					<svg xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m9 18 6-6-6-6"/>
+					</svg>
+				</button>
+			</div>
+		</main>
+
+		<div id="contact-overlay" class="form-overlay">
+			<div class="form-card">
+				<button id="close-overlay-trigger" class="close-overlay-btn">Close</button>
+				<h2 class="form-title">Contact Information</h2>
+				
+				<form id="developer-contact-form" novalidate>
+					<div class="form-group">
+						<label for="client-name">Name<span>*</span></label>
+						<input type="text" id="client-name" class="form-input" />
+						<span class="error-warning-label" id="err-client-name">This field is required</span>
+					</div>
+
+					<div class="form-group">
+						<label for="client-company">Company Name</label>
+						<input type="text" id="client-company" class="form-input" />
+					</div>
+
+					<div class="form-group">
+						<label for="client-url">Website URL</label>
+						<input type="url" id="client-url" class="form-input" placeholder="https://" />
+					</div>
+
+					<div class="form-group">
+						<label for="client-email">Email Address<span>*</span></label>
+						<input type="email" id="client-email" class="form-input" />
+						<span class="error-warning-label" id="err-client-email">This field is required</span>
+					</div>
+
+					<div class="form-group">
+						<label for="client-phone">Phone Number</label>
+						<input type="tel" id="client-phone" class="form-input" />
+					</div>
+
+					<div class="form-group">
+						<label for="client-category">Project Category<span>*</span></label>
+						<select id="client-category" class="form-select">
+							<option value="" disabled selected>Select a category...</option>
+							<option value="Full-Stack, long-term website project (more than 30 days)">Full-Stack, long-term website project (more than 30 days)</option>
+							<option value="Full-Stack, short term website project">Full-Stack, short term website project</option>
+							<option value="Help with a few design (frontend) bugs on my website">Help with a few design (frontend) bugs on my website</option>
+							<option value="Help with a few backend bugs on my website">Help with a few backend bugs on my website</option>
+							<option value="Help me figure out an error on my wordpress site">Help me figure out an error on my wordpress site</option>
+							<option value="Write a custom script, template, theme, or plugin for a CMS (Wordpress, Drupal, etc) to fit my website">Write a custom script, template, theme, or plugin for a CMS (Wordpress, Drupal, etc) to fit my website</option>
+						</select>
+						<span class="error-warning-label" id="err-client-category">This field is required</span>
+					</div>
+
+					<div class="form-group">
+						<label>Best time to contact you: Between...</label>
+						<div class="time-select-row">
+							<select id="time-start" class="form-select">
+								<option value="" selected>Select start time...</option>
+								<option value="8 AM">8 AM</option>
+								<option value="9 AM">9 AM</option>
+								<option value="10 AM">10 AM</option>
+								<option value="11 AM">11 AM</option>
+								<option value="12 PM">12 PM</option>
+								<option value="1 PM">1 PM</option>
+								<option value="2 PM">2 PM</option>
+								<option value="3 PM">3 PM</option>
+								<option value="4 PM">4 PM</option>
+								<option value="5 PM">5 PM</option>
+								<option value="6 PM">6 PM</option>
+								<option value="7 PM">7 PM</option>
+								<option value="8 PM">8 PM</option>
+							</select>
+							<span class="time-split-word">and</span>
+							<select id="time-end" class="form-select">
+								<option value="" selected>Select end time...</option>
+								<option value="9 AM">9 AM</option>
+								<option value="10 AM">10 AM</option>
+								<option value="11 AM">11 AM</option>
+								<option value="12 PM">12 PM</option>
+								<option value="1 PM">1 PM</option>
+								<option value="2 PM">2 PM</option>
+								<option value="3 PM">3 PM</option>
+								<option value="4 PM">4 PM</option>
+								<option value="5 PM">5 PM</option>
+								<option value="6 PM">6 PM</option>
+								<option value="7 PM">7 PM</option>
+								<option value="8 PM">8 PM</option>
+								<option value="9 PM">9 PM</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="client-summary">Describe a small summary of your project and questions:<span>*</span></label>
+						<textarea id="client-summary" class="form-textarea" maxlength="1000"></textarea>
+						<span class="error-warning-label" id="err-client-summary">This field is required</span>
+						<span class="error-warning-label" id="err-client-summary-min">You haven't reached the minimum amount of characters- please describe your reason for contacting</span>
+					</div>
+
+					<button type="submit" class="submit-form-btn">Submit Request</button>
+				</form>
+			</div>
+		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				
+				const slides = document.querySelectorAll('.slide');
+				const nextBtnGroup = document.getElementById('next-arrow-group');
+				const navTextLabel = document.getElementById('nav-text-label');
+				let currentIndex = 0;
+
+				nextBtnGroup?.addEventListener('click', () => {
+					slides[currentIndex].classList.remove('active');
+					currentIndex = (currentIndex + 1) % slides.length;
+					slides[currentIndex].classList.add('active');
+
+					if (currentIndex === slides.length - 1) {
+						if (navTextLabel) navTextLabel.innerText = "Start Over";
+					} else {
+						if (navTextLabel) navTextLabel.innerText = "Read More";
+					}
+				});
+
+				const overlayElement = document.getElementById('contact-overlay');
+				const openTrigger = document.getElementById('open-overlay-trigger');
+				const closeTrigger = document.getElementById('close-overlay-trigger');
+
+				openTrigger?.addEventListener('click', () => {
+					if (overlayElement) overlayElement.classList.add('open');
+				});
+
+				closeTrigger?.addEventListener('click', () => {
+					if (overlayElement) overlayElement.classList.remove('open');
+				});
+
+				const summaryTextArea = document.getElementById('client-summary');
+				const minErrorLabel = document.getElementById('err-client-summary-min');
+				const standardSummaryError = document.getElementById('err-client-summary');
+
+				summaryTextArea?.addEventListener('input', () => {
+					const currentLength = summaryTextArea.value ? summaryTextArea.value.length : 0;
+					if (currentLength > 0 && currentLength < 30) {
+						if (minErrorLabel) minErrorLabel.style.display = 'block';
+						if (standardSummaryError) standardSummaryError.style.display = 'none';
+						summaryTextArea.classList.add('input-error-border');
+					} else {
+						if (minErrorLabel) minErrorLabel.style.display = 'none';
+						summaryTextArea.classList.remove('input-error-border');
+					}
+				});
+
+				const contactForm = document.getElementById('developer-contact-form');
+				contactForm?.addEventListener('submit', (e) => {
+					e.preventDefault(); 
+
+					const errors = document.querySelectorAll('.error-warning-label');
+					errors.forEach(err => err.style.display = 'none');
+					const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
+					inputs.forEach(inp => inp.classList.remove('input-error-border'));
+
+					let formIsValid = true;
+
+					const nameInput = document.getElementById('client-name');
+					const emailInput = document.getElementById('client-email');
+					const categorySelect = document.getElementById('client-category');
+
+					if (!nameInput || !nameInput.value.trim()) {
+						const err = document.getElementById('err-client-name');
+						if (err) err.style.display = 'block';
+						nameInput?.classList.add('input-error-border');
+						formIsValid = false;
+					}
+					if (!emailInput || !emailInput.value.trim()) {
+						const err = document.getElementById('err-client-email');
+						if (err) err.style.display = 'block';
+						emailInput?.classList.add('input-error-border');
+						formIsValid = false;
+					}
+					if (!categorySelect || !categorySelect.value) {
+						const err = document.getElementById('err-client-category');
+						if (err) err.style.display = 'block';
+						categorySelect?.classList.add('input-error-border');
+						formIsValid = false;
+					}
+					if (!summaryTextArea || !summaryTextArea.value.trim()) {
+						const err = document.getElementById('err-client-summary');
+						if (err) err.style.display = 'block';
+						summaryTextArea?.classList.add('input-error-border');
+						formIsValid = false;
+					}
+
+					if (summaryTextArea && summaryTextArea.value.trim().length > 0 && summaryTextArea.value.trim().length < 30) {
+						if (minErrorLabel) minErrorLabel.style.display = 'block';
+						summaryTextArea.classList.add('input-error-border');
+						formIsValid = false;
+					}
+
+					if (!formIsValid) return;
+
+					const name = nameInput.value;
+					const company = document.getElementById('client-company').value || "Not Provided";
+					const url = document.getElementById('client-url').value || "Not Provided";
+					const email = emailInput.value;
+					const phone = document.getElementById('client-phone').value || "Not Provided";
+					const category = categorySelect.value;
+					
+					const timeStart = document.getElementById('time-start').value;
+					const timeEnd = document.getElementById('time-end').value;
+					const bestTimeToContact = (timeStart && timeEnd) ? `Between ${timeStart} and ${timeEnd}` : "Not Provided";
+					const projectSummary = summaryTextArea.value.trim();
+
+					const formattedMessage = 
+						`New Client Contact Form Submission:\n\n` +
+						`Name: ${name}\n` +
+						`Company: ${company}\n` +
+						`Website URL: ${url}\n` +
+						`Email: ${email}\n` +
+						`Phone: ${phone}\n` +
+						`Project Category: ${category}\n` +
+						`Best Time To Contact: ${bestTimeToContact}\n\n` +
+						`Project Summary & Questions:\n${projectSummary}`;
+
+					fetch("https://web3forms.com", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"Accept": "application/json"
+						},
+						body: JSON.stringify({
+							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
+							subject: `Contact Inquiry from ${name} via lorikelley.dev`,
+							from_name: "noreply@lorikelley.dev",
+							message: formattedMessage
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							alert("Thank you! Your request has been sent successfully.");
+							if (overlayElement) overlayElement.classList.remove('open');
+							contactForm.reset();
+						} else {
+							alert("Web3Forms API Error: " + data.message);
+						}
+					})
+					.catch(error => {
+						console.error("Transmission Error:", error);
+						alert("Form transmission could not complete. Please check your internet connection.");
+					});
+				});
+				
+			});
+		</script>
+	</body>
+</html>
