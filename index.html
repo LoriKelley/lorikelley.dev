@@ -403,7 +403,6 @@
 					<input type="hidden" name="access_key" value="38736f3d-a04b-4eaa-9667-4f4d2f977b83" />
 					<input type="hidden" name="redirect" value="https://lorikelley.dev" />
 					<input type="hidden" name="subject" value="New Client Contact Inquiry via lorikelley.dev" />
-					<input type="hidden" name="from_name" value="noreply@lorikelley.dev" />
 
 					<div class="form-group">
 						<label for="client-name">Name<span>*</span></label>
@@ -625,7 +624,8 @@
 						},
 						body: JSON.stringify({
 							access_key: "38736f3d-a04b-4eaa-9667-4f4d2f977b83",
-							subject: `Contact Inquiry from ${name} via lorikelley.dev`,
+							subject: `New Client Inquiry from ${name}`,
+							replyto: email, // Maps the reply route safely without spam triggers
 							message: formattedMessage
 						})
 					})
