@@ -1,4 +1,4 @@
-name = "Lorikelley-dev"
+name = "lorikelley-dev"
 pages_build_output_dir = "."
 
 send_email = [
