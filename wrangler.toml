@@ -1,0 +1,6 @@
+name = "your-pages-project-name"
+pages_build_output_dir = "."
+
+send_email = [
+  { name = "SEB" }
+]
