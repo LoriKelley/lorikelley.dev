@@ -1,5 +1,4 @@
 import { EmailMessage } from "cloudflare:email";
-import createMimeMessage from "mimetext";
 
 export async function onRequestPost(context) {
   try {
@@ -14,29 +13,32 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Build the email message
-    const msg = createMimeMessage();
-    
-    // Sender MUST use your domain name so SPF/DKIM validation passes
-    msg.setSender({ name: `${name} (Website Form)`, addr: "form@" + env.DOMAIN_NAME });
-    
-    // Recipient is your personal Gmail address
-    msg.setRecipient(env.MY_GMAIL_ADDRESS);
-    
-    // Setting Reply-To ensures hitting 'Reply' in Gmail responds to the visitor
-    msg.setHeader("Reply-To", email);
-    
-    msg.setSubject(`New Contact Form Submission from ${name}`);
-    msg.setMessage("text/plain", `Sender Name: ${name}\nSender Email: ${email}\n\nMessage:\n${message}`);
+    // Hardcoded addresses
+    const fromAddress = "form@lorikelley.dev";
+    const toAddress = "lorideveloper@gmail.com"; // <-- PUT YOUR REAL GMAIL HERE
 
-    // Create Cloudflare EmailMessage
+    const rawEmail = [
+      `From: ${name} <${fromAddress}>`,
+      `To: ${toAddress}`,
+      `Reply-To: ${email}`,
+      `Subject: New Website Submission from ${name}`,
+      `MIME-Version: 1.0`,
+      `Content-Type: text/plain; charset=utf-8`,
+      ``,
+      `Name: ${name}`,
+      `Email: ${email}`,
+      ``,
+      `Message:`,
+      `${message}`
+    ].join("\r\n");
+
     const emailMessage = new EmailMessage(
-      "form@" + env.DOMAIN_NAME,
-      env.MY_GMAIL_ADDRESS,
-      msg.asRaw()
+      fromAddress,
+      toAddress,
+      rawEmail
     );
 
-    // Send via Cloudflare's native email binding
+    // Uses the Email Routing binding
     await env.SEB.send(emailMessage);
 
     return new Response(
