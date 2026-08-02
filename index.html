@@ -14,6 +14,30 @@
 				background-color: #030303 !important;
 			}
 
+		@media (max-width: 768px) {
+    	.nav-group-container {
+        	right: auto;
+        	left: 50%;
+        	top: auto;
+        	bottom: 2rem;
+        	transform: translateX(-50%);
+        
+        /* Switch to vertical stacking so text sits directly above the arrow */
+        flex-direction: column;
+        gap: 0.5rem;
+       }
+      .read-more-text {
+        display: inline-block !important; /* Forces text to show */
+        font-size: 0.95rem;                /* Keeps it proportional */
+        text-align: center;
+    }
+    .nav-arrow {
+        width: 3.5rem;
+        height: 3.5rem;
+        background: rgba(0, 0, 0, 0.85);
+    }
+      }
+			
 			.slider-container {
 				position: relative;
 				width: 100vw;
@@ -167,24 +191,31 @@
 				height: 2rem;
 			}
 
-			@media (max-width: 768px) {
-				.nav-group-container {
-					right: auto;
-					left: 50%;
-					top: auto;
-					bottom: 2.5rem;
-					transform: translateX(-50%);
-					gap: 0;
-				}
-				.read-more-text {
-					display: none !important;
-				}
-				.nav-arrow {
-					width: 4rem;
-					height: 4rem;
-					background: rgba(0, 0, 0, 0.85);
-				}
-			}
+		@media (max-width: 768px) {
+    		 .nav-group-container {
+        	right: auto;
+        	left: 50%;
+        	top: auto;
+        	bottom: 2rem;
+        	transform: translateX(-50%);
+        
+        	/* Switch to vertical stacking so text sits directly above the arrow */
+        	flex-direction: column;
+        	gap: 0.5rem;
+    		}
+
+    		.read-more-text {
+        	display: inline-block !important; /* Forces text to show */
+        	font-size: 0.95rem;                /* Keeps it proportional */
+        	text-align: center;
+    		}
+
+    		.nav-arrow {
+        	width: 3.5rem;
+        	height: 3.5rem;
+        	background: rgba(0, 0, 0, 0.85);
+    		}
+		}
 
 			.form-overlay {
 				position: fixed;
