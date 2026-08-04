@@ -66,50 +66,107 @@
 	text-align: left;
 }
 
-/* --- GLOBAL DESKTOP & TABLET LAYOUT (All Slides) --- */
+/* ==========================================
+   DESKTOP & TABLET STYLES (Min-Width 769px)
+   ========================================== */
 @media (min-width: 769px) {
-	/* 1. Reserve a dedicated 220px buffer zone on the far right of EVERY slide */
 	.slide {
-		padding-left: 5%;
-		padding-right: 220px !important; /* Hard invisible wall on the right for all slides */
-	}
-
-	/* 2. Base content styling for all slides */
-	.slide-content {
-		max-width: 100%;
-		text-align: left;
-	}
-
-	/* Prevent description text on any slide from expanding into the navigation area */
-	.description-text {
-		max-width: 60ch; /* Caps text width ~15-20 characters short of the right padding boundary */
-	}
-
-	/* 3. Slide 1 specific side-by-side grid */
-	.slide:first-child .slide-content {
-		display: grid;
-		grid-template-columns: min-content 1fr;
+		display: flex;
+		flex-direction: row;
 		align-items: center;
-		justify-content: start;
-		gap: 1.5rem;
+		justify-content: space-between;
+		padding: 2rem 5%;
+		gap: 2rem;
 	}
 
-	.slide:first-child img {
-		grid-column: 1;
-		grid-row: 1;
-		width: 260px;
-		max-width: none !important;
-		max-height: 75vh;
-		object-fit: cover;
-		border-radius: 8px;
+	/* Text Description Boundary (Prevents overlap on square/tablet screens) */
+	.slide .content-wrapper,
+	.slide .description-text {
+		flex: 1;
+		max-width: 65%;
+		margin-right: 4rem; 
 	}
 
-	.slide:first-child .description-text {
-		grid-column: 2;
-		grid-row: 1;
-		margin-bottom: 0;
+	/* Navigation Arrow & Text Group */
+	.nav-group-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		flex-shrink: 0;
+	}
+
+	.read-more-text {
+		font-size: 1rem;
+		text-align: center;
+	}
+
+	.nav-arrow {
+		width: 4rem;
+		height: 4rem;
+		background: rgba(0, 0, 0, 0.85);
 	}
 }
+
+/* ==========================================
+   MOBILE STYLES (Max-Width 768px)
+   ========================================== */
+@media (max-width: 768px) {
+	.slide {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 2rem 8%; 
+		box-sizing: border-box;
+	}
+
+	.description-text {
+		font-size: 1.2rem;
+		line-height: 1.35;
+	}
+
+	/* Centered Slide Image */
+	.slide:first-child img {
+		margin: 1rem auto;
+		display: block;
+		max-width: 100%;
+		height: auto;
+	}
+
+	/* Mobile Navigation Group */
+	.nav-group-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 2rem;    /* Clear gap below image/text */
+		margin-bottom: 2rem; /* Buffer off bottom edge of viewport */
+		width: 100%;
+	}
+
+	.read-more-text {
+		display: inline-block !important;
+		font-size: 0.95rem;
+		text-align: center;
+	}
+
+	.nav-arrow {
+		width: 3.5rem;
+		height: 3.5rem;
+		background: rgba(0, 0, 0, 0.85);
+	}
+
+	/* Arrow Graphic Boundaries */
+	.nav-arrow img,
+	.nav-arrow svg {
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
+	}
+}
+
+
+			
 			.description-text {
     			font-size: 1.8rem;   /* Reduced from 2.5rem */
     			line-height: 1.3;    /* Tightened from 1.4 to keep lines grouped comfortably */
@@ -202,71 +259,6 @@
 				width: 2rem;
 				height: 2rem;
 			}
-
-	/* ==========================================
-   CONSOLIDATED MOBILE STYLES (Max-Width 768px)
-   ========================================== */
-@media (max-width: 768px) {
-
-	/* 1. SLIDE CONTAINER */
-	.slide {
-		padding: 0 8% 120px 8%; 
-	}
-
-	.description-text {
-		font-size: 1.2rem;
-		line-height: 1.35;
-	}
-
-	/* 2. SLIDE 1 IMAGE (Centered horizontally) */
-	.slide:first-child img {
-		margin: 20px auto 0 auto; 
-		display: block;
-	}
-
-	/* 3. "READ MORE" NAVIGATION GROUP (Anchored at bottom with spacing buffer) */
-	.nav-group-container {
-		position: absolute;
-		right: auto;
-		left: 50%;
-		top: auto;
-		bottom: 0;
-		transform: translateX(-50%);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		z-index: 100;
-		
-		/* TOP & BOTTOM BORDER BUFFERS FOR MOBILE */
-		padding-top: 2rem;      /* Top buffer: stops image above from touching/overlapping */
-		padding-bottom: 2.5rem; /* Bottom buffer: keeps arrow elevated off bottom edge */
-		box-sizing: border-box;
-	}
-
-	.read-more-text {
-		display: inline-block !important;
-		font-size: 0.95rem;
-		text-align: center;
-	}
-
-	/* 4. ARROW WRAPPER & ICON SIZING */
-	.nav-arrow {
-		width: 3.5rem;
-		height: 3.5rem;
-		background: rgba(0, 0, 0, 0.85);
-	}
-
-	.nav-arrow img,
-	.nav-arrow svg {
-		max-width: 100%;
-		max-height: 100%;
-		display: block;
-	}
-}
-
-
-			
 
 			.form-overlay {
 				position: fixed;
