@@ -201,60 +201,57 @@
 				height: 2rem;
 			}
 
-		@media (max-width: 768px) {
+	/* ==========================================
+   CONSOLIDATED MOBILE STYLES (Max-Width 768px)
+   ========================================== */
+@media (max-width: 768px) {
 
 	/* 1. SLIDE CONTAINER */
 	.slide {
-		height: 100vh;
-		box-sizing: border-box;
-		padding: 20px 8% 120px 8%; /* Bottom padding prevents text from scrolling behind arrow */
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		position: relative;
+		padding: 0 8% 120px 8%; 
 	}
 
 	.description-text {
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 		line-height: 1.35;
 	}
 
-	/* 2. SLIDE 1 IMAGE (Centered below text) */
+	/* 2. SLIDE 1 IMAGE (Centered horizontally) */
 	.slide:first-child img {
-		margin: 20px auto 0 auto; /* Centers image horizontally */
+		margin: 20px auto 0 auto; 
 		display: block;
 	}
 
-	/* 3. "READ MORE" NAVIGATION GROUP (Lifted above screen bottom) */
+	/* 3. "READ MORE" NAVIGATION GROUP (Anchored at bottom with spacing buffer) */
 	.nav-group-container {
-		position: fixed; /* Locks to visible viewport, no scrolling needed */
+		position: absolute;
+		right: auto;
 		left: 50%;
-		bottom: 12vh; /* Lifts arrow comfortably high off the bottom edge */
+		top: auto;
+		bottom: 0;
 		transform: translateX(-50%);
 		display: flex;
-		flex-direction: column; /* Stacks text on top of arrow */
+		flex-direction: column; /* Stacks text directly above arrow */
 		align-items: center;
 		gap: 0.5rem;
-		z-index: 1000;
-		overflow: visible !important;
+		z-index: 100;
+		
+		/* Adds bottom padding buffer to keep arrow elevated off screen edge */
+		padding-bottom: 2.5rem; 
+		box-sizing: border-box;
 	}
 
 	.read-more-text {
-		display: inline-block !important; /* Forces text to display */
+		display: inline-block !important;
 		font-size: 0.95rem;
 		text-align: center;
 	}
 
+	/* 4. ARROW WRAPPER & ICON SIZING */
 	.nav-arrow {
 		width: 3.5rem;
 		height: 3.5rem;
 		background: rgba(0, 0, 0, 0.85);
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		overflow: visible !important;
-		box-sizing: border-box;
 	}
 
 	.nav-arrow img,
@@ -264,6 +261,9 @@
 		display: block;
 	}
 }
+
+
+			
 
 			.form-overlay {
 				position: fixed;
