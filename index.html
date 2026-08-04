@@ -144,6 +144,8 @@
 				gap: 1rem;
 				z-index: 10;
 				cursor: pointer;
+				padding-left: 2.5rem; /* THIS is the left border buffer to stop text overlap */
+    box-sizing: border-box;
 			}
 
 			.read-more-text {
@@ -231,13 +233,14 @@
 		bottom: 0;
 		transform: translateX(-50%);
 		display: flex;
-		flex-direction: column; /* Stacks text directly above arrow */
+		flex-direction: column;
 		align-items: center;
 		gap: 0.5rem;
 		z-index: 100;
 		
-		/* Adds bottom padding buffer to keep arrow elevated off screen edge */
-		padding-bottom: 2.5rem; 
+		/* TOP & BOTTOM BORDER BUFFERS FOR MOBILE */
+		padding-top: 2rem;      /* Top buffer: stops image above from touching/overlapping */
+		padding-bottom: 2.5rem; /* Bottom buffer: keeps arrow elevated off bottom edge */
 		box-sizing: border-box;
 	}
 
