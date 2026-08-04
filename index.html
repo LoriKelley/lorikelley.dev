@@ -13,30 +13,6 @@
 				overflow: hidden !important;
 				background-color: #030303 !important;
 			}
-
-		@media (max-width: 768px) {
-    	.nav-group-container {
-        	right: auto;
-        	left: 50%;
-        	top: auto;
-        	bottom: 2rem;
-        	transform: translateX(-50%);
-        
-        /* Switch to vertical stacking so text sits directly above the arrow */
-        flex-direction: column;
-        gap: 0.5rem;
-       }
-      .read-more-text {
-        display: inline-block !important; /* Forces text to show */
-        font-size: 0.95rem;                /* Keeps it proportional */
-        text-align: center;
-    }
-    .nav-arrow {
-        width: 3.5rem;
-        height: 3.5rem;
-        background: rgba(0, 0, 0, 0.85);
-    }
-      }
 			
 			.slider-container {
 				position: relative;
@@ -90,26 +66,38 @@
 	text-align: left;
 }
 
-/* --- DESKTOP LAYOUT (Slide 1 Pushed Left) --- */
+/* --- GLOBAL DESKTOP & TABLET LAYOUT (All Slides) --- */
 @media (min-width: 769px) {
-	/* Reduce right side slide padding so content doesn't push into the nav button zone */
+	/* 1. Reserve a dedicated 220px buffer zone on the far right of EVERY slide */
 	.slide {
-		padding: 0 16% 0 5%; 
+		padding-left: 5%;
+		padding-right: 220px !important; /* Hard invisible wall on the right for all slides */
 	}
 
+	/* 2. Base content styling for all slides */
+	.slide-content {
+		max-width: 100%;
+		text-align: left;
+	}
+
+	/* Prevent description text on any slide from expanding into the navigation area */
+	.description-text {
+		max-width: 60ch; /* Caps text width ~15-20 characters short of the right padding boundary */
+	}
+
+	/* 3. Slide 1 specific side-by-side grid */
 	.slide:first-child .slide-content {
-		max-width: 100%; /* Allows content to pull as far left as the padding permits */
 		display: grid;
-		grid-template-columns: min-content 1fr; /* Image takes only its needed width, text sits right next to it */
+		grid-template-columns: min-content 1fr;
 		align-items: center;
-		justify-content: start; /* Locks entire grid to the far left edge */
-		gap: 1.5rem; /* Tightens gap between image and text */
+		justify-content: start;
+		gap: 1.5rem;
 	}
 
 	.slide:first-child img {
-		grid-column: 1; /* Picture on far left */
+		grid-column: 1;
 		grid-row: 1;
-		width: 260px; /* Fixed width for tall/skinny picture */
+		width: 260px;
 		max-width: none !important;
 		max-height: 75vh;
 		object-fit: cover;
@@ -117,10 +105,9 @@
 	}
 
 	.slide:first-child .description-text {
-		grid-column: 2; /* Text immediately to the right of picture */
+		grid-column: 2;
 		grid-row: 1;
 		margin-bottom: 0;
-		max-width: 650px; /* Limits text column width so it never overflows toward the right nav button */
 	}
 }
 			.description-text {
@@ -132,19 +119,6 @@
     			color: #ffffff;
     			text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
 			}
-
-			@media (max-width: 768px) {
-	.slide {
-		padding: 0 8% 120px 8%; 
-	}
-	.description-text {
-		font-size: 1.2rem;
-		line-height: 1.35;
-	}
-	.slide:first-child img {
-		margin: 0 auto; /* Centers the picture below the text on mobile */
-	}
-}
 
 			.inline-trigger-link {
 				color: #ffffff;
@@ -228,30 +202,68 @@
 			}
 
 		@media (max-width: 768px) {
-    		 .nav-group-container {
-        	right: auto;
-        	left: 50%;
-        	top: auto;
-        	bottom: 2rem;
-        	transform: translateX(-50%);
-        
-        	/* Switch to vertical stacking so text sits directly above the arrow */
-        	flex-direction: column;
-        	gap: 0.5rem;
-    		}
 
-    		.read-more-text {
-        	display: inline-block !important; /* Forces text to show */
-        	font-size: 0.95rem;                /* Keeps it proportional */
-        	text-align: center;
-    		}
+	/* 1. SLIDE CONTAINER */
+	.slide {
+		height: 100vh;
+		box-sizing: border-box;
+		padding: 20px 8% 120px 8%; /* Bottom padding prevents text from scrolling behind arrow */
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		position: relative;
+	}
 
-    		.nav-arrow {
-        	width: 3.5rem;
-        	height: 3.5rem;
-        	background: rgba(0, 0, 0, 0.85);
-    		}
-		}
+	.description-text {
+		font-size: 1.1rem;
+		line-height: 1.35;
+	}
+
+	/* 2. SLIDE 1 IMAGE (Centered below text) */
+	.slide:first-child img {
+		margin: 20px auto 0 auto; /* Centers image horizontally */
+		display: block;
+	}
+
+	/* 3. "READ MORE" NAVIGATION GROUP (Lifted above screen bottom) */
+	.nav-group-container {
+		position: fixed; /* Locks to visible viewport, no scrolling needed */
+		left: 50%;
+		bottom: 12vh; /* Lifts arrow comfortably high off the bottom edge */
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column; /* Stacks text on top of arrow */
+		align-items: center;
+		gap: 0.5rem;
+		z-index: 1000;
+		overflow: visible !important;
+	}
+
+	.read-more-text {
+		display: inline-block !important; /* Forces text to display */
+		font-size: 0.95rem;
+		text-align: center;
+	}
+
+	.nav-arrow {
+		width: 3.5rem;
+		height: 3.5rem;
+		background: rgba(0, 0, 0, 0.85);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: visible !important;
+		box-sizing: border-box;
+	}
+
+	.nav-arrow img,
+	.nav-arrow svg {
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
+	}
+}
 
 			.form-overlay {
 				position: fixed;
