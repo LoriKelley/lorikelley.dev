@@ -86,9 +86,36 @@
 			}
 
 			.slide-content {
-				max-width: 800px;
-				text-align: left;
-			}
+	max-width: 800px;
+	text-align: left;
+}
+
+/* --- DESKTOP LAYOUT (Slide 1 Side-by-Side) --- */
+@media (min-width: 769px) {
+	.slide:first-child .slide-content {
+		max-width: 1100px; /* Widens container so it pulls further left */
+		display: grid;
+		grid-template-columns: 280px 1fr; /* Fixed narrow column for tall image, right side for text */
+		align-items: center;
+		gap: 2.5rem;
+	}
+
+	.slide:first-child img {
+		grid-column: 1; /* Picture sits on the left */
+		grid-row: 1;
+		width: 100%;
+		max-width: 100% !important; /* Overrides inline style on desktop */
+		max-height: 75vh;
+		object-fit: cover;
+		border-radius: 8px;
+	}
+
+	.slide:first-child .description-text {
+		grid-column: 2; /* Text sits on the right */
+		grid-row: 1;
+		margin-bottom: 0;
+	}
+}
 
 			.description-text {
     			font-size: 1.8rem;   /* Reduced from 2.5rem */
@@ -101,14 +128,17 @@
 			}
 
 			@media (max-width: 768px) {
-    			.slide {
-       		 	padding: 0 8% 120px 8%; 
-    			}
-    			.description-text {
-        			font-size: 1.2rem; /* Reduced from 1.5rem */
-        			line-height: 1.35;  /* Tightened from 1.5 so long paragraphs don't take up the whole screen */
-    			}
-			}
+	.slide {
+		padding: 0 8% 120px 8%; 
+	}
+	.description-text {
+		font-size: 1.2rem;
+		line-height: 1.35;
+	}
+	.slide:first-child img {
+		margin: 0 auto; /* Centers the picture below the text on mobile */
+	}
+}
 
 			.inline-trigger-link {
 				color: #ffffff;
