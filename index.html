@@ -90,33 +90,39 @@
 	text-align: left;
 }
 
-/* --- DESKTOP LAYOUT (Slide 1 Side-by-Side) --- */
+/* --- DESKTOP LAYOUT (Slide 1 Pushed Left) --- */
 @media (min-width: 769px) {
+	/* Reduce right side slide padding so content doesn't push into the nav button zone */
+	.slide {
+		padding: 0 16% 0 5%; 
+	}
+
 	.slide:first-child .slide-content {
-		max-width: 1100px; /* Widens container so it pulls further left */
+		max-width: 100%; /* Allows content to pull as far left as the padding permits */
 		display: grid;
-		grid-template-columns: 280px 1fr; /* Fixed narrow column for tall image, right side for text */
+		grid-template-columns: min-content 1fr; /* Image takes only its needed width, text sits right next to it */
 		align-items: center;
-		gap: 2.5rem;
+		justify-content: start; /* Locks entire grid to the far left edge */
+		gap: 1.5rem; /* Tightens gap between image and text */
 	}
 
 	.slide:first-child img {
-		grid-column: 1; /* Picture sits on the left */
+		grid-column: 1; /* Picture on far left */
 		grid-row: 1;
-		width: 100%;
-		max-width: 100% !important; /* Overrides inline style on desktop */
+		width: 260px; /* Fixed width for tall/skinny picture */
+		max-width: none !important;
 		max-height: 75vh;
 		object-fit: cover;
 		border-radius: 8px;
 	}
 
 	.slide:first-child .description-text {
-		grid-column: 2; /* Text sits on the right */
+		grid-column: 2; /* Text immediately to the right of picture */
 		grid-row: 1;
 		margin-bottom: 0;
+		max-width: 650px; /* Limits text column width so it never overflows toward the right nav button */
 	}
 }
-
 			.description-text {
     			font-size: 1.8rem;   /* Reduced from 2.5rem */
     			line-height: 1.3;    /* Tightened from 1.4 to keep lines grouped comfortably */
